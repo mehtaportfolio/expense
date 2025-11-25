@@ -1,0 +1,100 @@
+/* URL IMPORTS (SUCH AS FONT IMPORTS) SHOULD BE KEPT ABOVE TAILWIND IMPORTS - DO NOT DELETE THIS COMMENT */
+
+/* PLEASE NOTE: THESE TAILWIND IMPORTS SHOULD NEVER BE DELETED - DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL - DO NOT DELETE THIS COMMENT */
+
+@layer base {
+  :root[data-theme='light'] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --border-primary: #e5e7eb;
+    --border-secondary: #d1d5db;
+    --text-primary: #000000;
+    --text-secondary: #000000;
+    --text-tertiary: #6b7280;
+    --card-bg: #ffffff;
+    --card-hover: #f9fafb;
+  }
+
+  :root[data-theme='dark'] {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #262626;
+    --border-primary: #333333;
+    --border-secondary: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --text-tertiary: #737373;
+    --card-bg: #1a1a1a;
+    --card-hover: #262626;
+  }
+
+  * {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  body {
+    @apply antialiased;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+}
+
+@layer utilities {
+  .bg-primary {
+    background-color: var(--bg-primary);
+  }
+  
+  .bg-secondary {
+    background-color: var(--bg-secondary);
+  }
+  
+  .bg-tertiary {
+    background-color: var(--bg-tertiary);
+  }
+  
+  .bg-card {
+    background-color: var(--card-bg);
+  }
+  
+  .bg-card-hover {
+    background-color: var(--card-hover);
+  }
+  
+  .border-primary {
+    border-color: var(--border-primary);
+  }
+  
+  .border-secondary {
+    border-color: var(--border-secondary);
+  }
+  
+  .text-primary {
+    color: var(--text-primary);
+  }
+  
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  
+  .text-tertiary {
+    color: var(--text-tertiary);
+  }
+}
+
+.react-tabs__tab {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.react-tabs__tab--selected {
+  border: none;
+  background: none;
+}
+
