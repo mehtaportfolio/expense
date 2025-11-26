@@ -133,7 +133,7 @@ function AppContent() {
 
         {/* Page Content */}
         <div className="min-h-[calc(100vh-180px)]">
-          {currentPage === 'dashboard' && <Dashboard expenses={expenses} onExpenseUpdate={refetch} />}
+          {currentPage === 'dashboard' && <Dashboard expenses={expenses} mode={mode} onExpenseUpdate={refetch} />}
           {currentPage === 'expenses' && <Expenses expenses={expenses} categories={getUniqueCategories()} mode={mode} onAddExpense={addExpense} onAddExpenses={addExpenses} onUpdateExpense={updateExpense} onDeleteExpense={deleteExpense} />}
           {currentPage === 'analysis' && <Analysis mode={mode} />}
           {currentPage === 'salary' && <Salary mode={mode} />}

@@ -6,10 +6,12 @@ import { TransactionModal } from '../components/TransactionModal';
 import { CalendarIcon } from 'lucide-react';
 interface DashboardProps {
   expenses: Expense[];
+  mode: 'view' | 'edit';
   onExpenseUpdate?: () => void;
 }
 export function Dashboard({
   expenses,
+  mode,
   onExpenseUpdate
 }: DashboardProps) {
   const [modalState, setModalState] = useState<{
@@ -124,6 +126,7 @@ export function Dashboard({
         onClose={handleModalClose}
         expenseType={modalState.expenseType}
         transactions={modalState.transactions}
+        mode={mode}
         onTransactionUpdate={handleTransactionUpdate}
       />
     </div>;

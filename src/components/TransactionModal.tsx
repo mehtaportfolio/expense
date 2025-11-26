@@ -12,6 +12,7 @@ interface TransactionModalProps {
   onClose: () => void;
   expenseType: string;
   transactions: Expense[];
+  mode: 'view' | 'edit';
   onTransactionUpdate: () => void;
 }
 
@@ -20,6 +21,7 @@ export function TransactionModal({
   onClose,
   expenseType,
   transactions,
+  mode,
   onTransactionUpdate
 }: TransactionModalProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
@@ -100,22 +102,26 @@ export function TransactionModal({
                   <span className="font-semibold text-primary">
                     {formatCurrency(expense.amount)}
                   </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(expense)}
-                    className="p-1"
-                  >
-                    <EditIcon className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(expense)}
-                    className="p-1 text-red-500 hover:text-red-600"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
+                  {mode === 'edit' && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(expense)}
+                        className="p-1"
+                      >
+                        <EditIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(expense)}
+                        className="p-1 text-red-500 hover:text-red-600"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}

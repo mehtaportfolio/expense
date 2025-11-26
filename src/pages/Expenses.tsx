@@ -92,8 +92,11 @@ export function Expenses({
     if (filters.expense_type !== 'all') {
       result = result.filter(exp => exp.expense_type === filters.expense_type);
     }
-    // Limit to latest 20
-    return result.slice(0, 20);
+    // Only limit to latest 20 when no filters are applied
+    const hasActiveFilters = filters.fromDate || filters.toDate ||
+      filters.category !== 'all' || filters.description.length > 0 ||
+      filters.expense_type !== 'all';
+    return hasActiveFilters ? result : result.slice(0, 20);
   }, [expenses, filters]);
   const handleApplyFilters = (newFilters: FilterState) => {
     setFilters(newFilters);
