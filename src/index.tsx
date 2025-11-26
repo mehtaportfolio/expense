@@ -8,7 +8,8 @@ createRoot(document.getElementById("root")).render(<App />);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
+      .then(() => {
+        console.log('SW registered');
       })
       .catch(err => {
         console.log('SW registration failed:', err);

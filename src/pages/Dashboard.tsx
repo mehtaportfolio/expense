@@ -29,10 +29,10 @@ export function Dashboard({
     const currentYear = now.getFullYear();
 
     const monthExpenses = expenses.filter(exp => {
-      // Parse date string (YYYY-MM-DD format from Supabase)
-      const dateParts = exp.date.split('-');
+      const dateStr = exp.date.split('T')[0];
+      const dateParts = dateStr.split('-');
       const expYear = parseInt(dateParts[0]);
-      const expMonth = parseInt(dateParts[1]); // Already 1-12
+      const expMonth = parseInt(dateParts[1]);
       return expYear === currentYear && expMonth === currentMonth;
     });
     const income = monthExpenses.filter(e => e.expense_type === 'income').reduce((sum, e) => sum + e.amount, 0);

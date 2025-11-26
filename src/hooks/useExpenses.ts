@@ -41,15 +41,18 @@ const fetchExpenses = async () => {
       const {
         data,
         error: insertError
-      } = await supabase.from('expenses').insert(expense).select().single();
+      } = await supabase.from('expenses').insert([expense]).select();
       if (insertError) throw insertError;
-      if (data) {
-        setExpenses(prev => [data, ...prev]);
+      if (data && data.length > 0) {
+        setExpenses(prev => [data[0], ...prev]);
+      } else {
+        await fetchExpenses();
       }
       return {
         success: true
       };
     } catch (err) {
+      console.error('Error adding expense:', err);
       return {
         success: false,
         error: err instanceof Error ? err.message : 'Failed to add expense'
@@ -64,13 +67,16 @@ const fetchExpenses = async () => {
         error: insertError
       } = await supabase.from('expenses').insert(expensesToAdd).select();
       if (insertError) throw insertError;
-      if (data) {
+      if (data && data.length > 0) {
         setExpenses(prev => [...data, ...prev]);
+      } else {
+        await fetchExpenses();
       }
       return {
         success: true
       };
     } catch (err) {
+      console.error('Error adding expenses:', err);
       return {
         success: false,
         error: err instanceof Error ? err.message : 'Failed to add expenses'

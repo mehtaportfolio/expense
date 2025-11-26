@@ -73,12 +73,18 @@ export function Expenses({
 
   const filteredExpenses = useMemo(() => {
     let result = [...expenses];
-    // Date range filter
+    // Date range filter - normalize date strings for proper comparison
     if (filters.fromDate) {
-      result = result.filter(exp => exp.date >= filters.fromDate);
+      result = result.filter(exp => {
+        const expDate = exp.date.split('T')[0];
+        return expDate >= filters.fromDate;
+      });
     }
     if (filters.toDate) {
-      result = result.filter(exp => exp.date <= filters.toDate);
+      result = result.filter(exp => {
+        const expDate = exp.date.split('T')[0];
+        return expDate <= filters.toDate;
+      });
     }
     // Category filter
     if (filters.category !== 'all') {
