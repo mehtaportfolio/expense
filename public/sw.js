@@ -32,6 +32,16 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  const requestUrl = new URL(event.request.url);
+  const isSameOrigin = requestUrl.origin === self.location.origin;
+
+  if (!isSameOrigin) {
+    event.respondWith(
+      fetch(event.request).catch(() => new Response('Offline - content not available'))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -55,7 +65,7 @@ self.addEventListener('fetch', event => {
           })
           .catch(() => {
             return caches.match(event.request)
-              .then(response => response || new Response('Offline - content not available'));
+              .then(cacheResponse => cacheResponse || new Response('Offline - content not available'));
           });
       })
   );

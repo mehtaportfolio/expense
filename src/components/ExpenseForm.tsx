@@ -32,7 +32,7 @@ export function ExpenseForm({
   const [formData, setFormData] = useState({
     description: expense?.description || '',
     amount: expense?.amount?.toString() || '',
-    category: expense?.category || 'Other',
+    category: expense?.category || '',
     date: expense?.date || new Date().toISOString().split('T')[0]
   });
 
@@ -41,7 +41,7 @@ export function ExpenseForm({
   const isNewCategory = masterLoading ? false : !isCategoryInMaster(formData.category);
   const currentExpenseType = masterLoading
     ? 'expense'
-    : (manualExpenseType || getExpenseTypeByCategory(formData.category) || 'expense');
+    : (manualExpenseType || getExpenseTypeByCategory(formData.category) || '');
 
   // Reset manual expense type when category changes
   useEffect(() => {
@@ -121,15 +121,16 @@ export function ExpenseForm({
     }))} error={errors.date} />
 
       {errors.submit && <p className="text-sm text-red-600">{errors.submit}</p>}
-      <Input label="Description" value={formData.description} onChange={e => setFormData(prev => ({
-      ...prev,
-      description: e.target.value
-    }))} placeholder="Coffee, groceries, salary..." error={errors.description} autoFocus />
 
       <Input label="Amount" type="number" step="0.01" value={formData.amount} onChange={e => setFormData(prev => ({
       ...prev,
       amount: e.target.value
     }))} placeholder="0.00" error={errors.amount} />
+
+      <Input label="Description" value={formData.description} onChange={e => setFormData(prev => ({
+      ...prev,
+      description: e.target.value
+    }))} placeholder="Coffee, groceries, salary..." error={errors.description} autoFocus />
 
       <SearchableSelect label="Category" value={formData.category} onChange={value => setFormData(prev => ({
       ...prev,

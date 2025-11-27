@@ -39,15 +39,10 @@ const fetchExpenses = async () => {
   const addExpense = async (expense: ExpenseInsert) => {
     try {
       const {
-        data,
         error: insertError
-      } = await supabase.from('expenses').insert([expense]).select();
+      } = await supabase.from('expenses').insert([expense]);
       if (insertError) throw insertError;
-      if (data && data.length > 0) {
-        setExpenses(prev => [data[0], ...prev]);
-      } else {
-        await fetchExpenses();
-      }
+      await fetchExpenses();
       return {
         success: true
       };
@@ -63,15 +58,10 @@ const fetchExpenses = async () => {
   const addExpenses = async (expensesToAdd: ExpenseInsert[]) => {
     try {
       const {
-        data,
         error: insertError
-      } = await supabase.from('expenses').insert(expensesToAdd).select();
+      } = await supabase.from('expenses').insert(expensesToAdd);
       if (insertError) throw insertError;
-      if (data && data.length > 0) {
-        setExpenses(prev => [...data, ...prev]);
-      } else {
-        await fetchExpenses();
-      }
+      await fetchExpenses();
       return {
         success: true
       };
