@@ -4,7 +4,6 @@ import { Input } from './Input';
 import { SearchableSelect } from './SearchableSelect';
 import { Button } from './Button';
 import { DescriptionFilter } from './DescriptionFilter';
-import { CATEGORIES } from '../types/expense';
 interface FilterState {
   fromDate: string;
   toDate: string;
@@ -13,12 +12,14 @@ interface FilterState {
   expense_type: string;
 }
 interface AdvancedFilterBarProps {
+  categories: string[];
   descriptions: string[];
   expenseTypes: string[];
   onApplyFilters: (filters: FilterState) => void;
   onResetFilters: () => void;
 }
 export function AdvancedFilterBar({
+  categories,
   descriptions,
   expenseTypes,
   onApplyFilters,
@@ -35,7 +36,7 @@ export function AdvancedFilterBar({
   const categoryOptions = [{
     value: 'all',
     label: 'All Categories'
-  }, ...CATEGORIES.map(cat => ({
+  }, ...categories.map(cat => ({
     value: cat,
     label: cat
   }))];

@@ -66,6 +66,10 @@ export function Expenses({
     return Array.from(descriptions).sort();
   }, [expenses]);
 
+  const uniqueCategories = useMemo(() => {
+    return masterData.map(entry => entry.category).sort();
+  }, [masterData]);
+
   const uniqueExpenseTypes = useMemo(() => {
     const expenseTypes = new Set(masterData.map(entry => entry.expense_type));
     return Array.from(expenseTypes).sort();
@@ -161,7 +165,7 @@ export function Expenses({
         </div>
       </div>
 
-      <AdvancedFilterBar descriptions={uniqueDescriptions} expenseTypes={uniqueExpenseTypes} onApplyFilters={handleApplyFilters} onResetFilters={handleResetFilters} />
+      <AdvancedFilterBar categories={uniqueCategories} descriptions={uniqueDescriptions} expenseTypes={uniqueExpenseTypes} onApplyFilters={handleApplyFilters} onResetFilters={handleResetFilters} />
 
       <ExpenseList expenses={filteredExpenses} mode={mode} onEdit={setEditingExpense} onDelete={setDeletingExpense} />
 

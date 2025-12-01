@@ -6,21 +6,34 @@ import { useTheme } from '../hooks/useTheme';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
-import { Select } from '../components/Select';
 import { SalaryDetailInsert } from '../types/database';
 
 interface SalaryProps {
   mode?: 'view' | 'edit' | null;
 }
 
+const MONTHS = [
+  { value: '0', label: 'January' },
+  { value: '1', label: 'February' },
+  { value: '2', label: 'March' },
+  { value: '3', label: 'April' },
+  { value: '4', label: 'May' },
+  { value: '5', label: 'June' },
+  { value: '6', label: 'July' },
+  { value: '7', label: 'August' },
+  { value: '8', label: 'September' },
+  { value: '9', label: 'October' },
+  { value: '10', label: 'November' },
+  { value: '11', label: 'December' }
+];
+
 export function Salary({ mode }: SalaryProps) {
-  const { loading, error, addSalaryDetail, updateSalaryDetail, getSalaryDetailsByMonthYear, getExpensesByMonthYear, calculateMonthlySummary, calculateYearlySummary, salaryDetails } = useSalary();
+  const { loading, error, addSalaryDetail, updateSalaryDetail, getSalaryDetailsByMonthYear, calculateYearlySummary, salaryDetails } = useSalary();
   const { expenses } = useExpenses();
   const { theme } = useTheme();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [yearInput, setYearInput] = useState('');
   const [dateInput, setDateInput] = useState('');
@@ -43,22 +56,6 @@ export function Salary({ mode }: SalaryProps) {
     etf: ''
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  const months = [
-    { value: '', label: 'All Months' },
-    { value: '0', label: 'January' },
-    { value: '1', label: 'February' },
-    { value: '2', label: 'March' },
-    { value: '3', label: 'April' },
-    { value: '4', label: 'May' },
-    { value: '5', label: 'June' },
-    { value: '6', label: 'July' },
-    { value: '7', label: 'August' },
-    { value: '8', label: 'September' },
-    { value: '9', label: 'October' },
-    { value: '10', label: 'November' },
-    { value: '11', label: 'December' }
-  ];
 
 
 
@@ -167,30 +164,18 @@ export function Salary({ mode }: SalaryProps) {
     }
   };
 
-  const handleApplyFilter = () => {
-    // Filter is applied when month and year are selected
-  };
-
   const handleResetFilter = () => {
-    setSelectedMonth(null);
     setSelectedYear(null);
     setYearInput('');
   };
 
-  const hasActiveFilter = selectedMonth !== null || selectedYear !== null;
-  const isYearOnlyMode = selectedMonth === null && selectedYear !== null;
+  const hasActiveFilter = selectedYear !== null;
 
   const filteredSalaryDetails = hasActiveFilter
-    ? getSalaryDetailsByMonthYear(selectedMonth, selectedYear)
+    ? getSalaryDetailsByMonthYear(null, selectedYear)
     : [];
 
-  const filteredExpenses = hasActiveFilter
-    ? getExpensesByMonthYear(expenses, selectedMonth, selectedYear)
-    : [];
-
-  const summary = !isYearOnlyMode && hasActiveFilter ? calculateMonthlySummary(filteredSalaryDetails, filteredExpenses) : null;
-  
-  const yearlySummary = isYearOnlyMode && selectedYear !== null 
+  const yearlySummary = hasActiveFilter && selectedYear !== null 
     ? calculateYearlySummary(filteredSalaryDetails, expenses.filter(e => new Date(e.date).getFullYear() === selectedYear), selectedYear)
     : null;
 
@@ -242,14 +227,6 @@ export function Salary({ mode }: SalaryProps) {
       {/* Filters */}
       <div className="bg-card border border-primary rounded-lg p-4">
         <div className="flex flex-wrap gap-4 items-end">
-          <div className="w-48">
-            <Select
-              label="Month"
-              value={selectedMonth !== null ? selectedMonth.toString() : ''}
-              onChange={(value) => setSelectedMonth(value === '' ? null : parseInt(value))}
-              options={months}
-            />
-          </div>
           <div className="w-32">
             <Input
               label="Year"
@@ -276,9 +253,6 @@ export function Salary({ mode }: SalaryProps) {
             />
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleApplyFilter} variant="primary" disabled={selectedMonth === null && selectedYear === null}>
-              Apply
-            </Button>
             <Button onClick={handleResetFilter} variant="secondary">
               Reset
             </Button>
@@ -346,7 +320,7 @@ export function Salary({ mode }: SalaryProps) {
                   .map((monthlySummary) => (
                   <tr key={monthlySummary.month}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-primary font-medium">
-                      {months.find(m => m.value === monthlySummary.month.toString())?.label}
+                      {MONTHS.find(m => m.value === monthlySummary.month.toString())?.label}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
                       <div className="flex items-center">
@@ -383,60 +357,7 @@ export function Salary({ mode }: SalaryProps) {
         </div>
       )}
 
-      {/* Summary Table */}
-      {summary && (
-        <div className="bg-card border border-primary rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-primary">
-            <h2 className="text-lg font-semibold text-primary">
-              Summary for {months.find(m => m.value === selectedMonth?.toString())?.label || 'All Months'} {selectedYear || ''}
-            </h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-secondary">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Gross Salary</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Direct Saving</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Expenses</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Balance Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Saving %</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-primary">
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
-                    <div className="flex items-center">
-                      <IndianRupeeIcon className="w-4 h-4 mr-1" />
-                      {summary.grossSalary.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
-                    <div className="flex items-center">
-                      <IndianRupeeIcon className="w-4 h-4 mr-1" />
-                      {summary.directSaving.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
-                    <div className="flex items-center">
-                      <IndianRupeeIcon className="w-4 h-4 mr-1" />
-                      {summary.expenses.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
-                    <div className="flex items-center">
-                      <IndianRupeeIcon className="w-4 h-4 mr-1" />
-                      {summary.balanceAmount.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-primary">
-                    {summary.savingPercentage.toFixed(2)}%
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+
 
       {/* Add Salary Modal */}
       {mode !== 'view' && <Modal

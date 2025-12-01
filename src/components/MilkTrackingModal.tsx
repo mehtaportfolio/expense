@@ -99,6 +99,32 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
     setEditValue('');
   };
 
+  const handleFillZeroValues = async () => {
+    try {
+      const rowsToUpdate = milkDetails.filter(item => item.kg === 0);
+      
+      if (rowsToUpdate.length === 0) {
+        alert('No rows with 0 kg to fill');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('milk_details')
+        .update({ kg: 0.5 })
+        .eq('kg', 0);
+
+      if (error) throw error;
+
+      setMilkDetails(prev =>
+        prev.map(item =>
+          item.kg === 0 ? { ...item, kg: 0.5 } : item
+        )
+      );
+    } catch (error) {
+      console.error('Error filling zero values:', error);
+    }
+  };
+
   const totalKg = milkDetails.reduce((sum, item) => sum + item.kg, 0);
   const totalAmount = totalKg * rate;
 
@@ -110,9 +136,20 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
       <div className="relative bg-card border border-primary rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-card border-b border-primary px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary">Milk Tracking</h2>
-          <button onClick={onClose} className="text-tertiary hover:text-primary transition-colors" aria-label="Close modal">
-            ✕
-          </button>
+          <div className="flex items-center gap-3">
+            {mode !== 'view' && (
+              <Button
+                onClick={handleFillZeroValues}
+                variant="primary"
+                size="sm"
+              >
+                Fill 0.5 kg
+              </Button>
+            )}
+            <button onClick={onClose} className="text-tertiary hover:text-primary transition-colors" aria-label="Close modal">
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className="p-6 space-y-6">
