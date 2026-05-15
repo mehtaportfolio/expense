@@ -34,8 +34,7 @@ export function useExpenses() {
       const response = await fetch(getApiUrl('/api/expenses'), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(expense),
       });
@@ -66,8 +65,7 @@ export function useExpenses() {
       const response = await fetch(getApiUrl('/api/expenses/bulk'), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(expensesToAdd),
       });

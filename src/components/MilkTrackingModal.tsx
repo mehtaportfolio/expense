@@ -8,9 +8,10 @@ interface MilkTrackingModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode?: 'view' | 'edit' | null;
+  onRequirePassword?: () => void;
 }
 
-export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalProps) {
+export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: MilkTrackingModalProps) {
   const [milkDetails, setMilkDetails] = useState<MilkDetail[]>([]);
   const [rate, setRate] = useState<number>(45);
   const [loading, setLoading] = useState(false);
@@ -81,7 +82,6 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          ...getAuthHeaders()
         },
         body: JSON.stringify({ kg: newKg }),
       });
@@ -122,7 +122,6 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...getAuthHeaders()
         },
         body: JSON.stringify({ kg: 0.5 }),
       });
@@ -153,15 +152,13 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
         <div className="sticky top-0 bg-card border-b border-primary px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary">Milk Tracking</h2>
           <div className="flex items-center gap-3">
-            {mode === 'edit' && (
-              <Button
-                onClick={handleFillZeroValues}
-                variant="primary"
-                size="sm"
-              >
-                Fill 0.5 kg
-              </Button>
-            )}
+            <Button
+              onClick={handleFillZeroValues}
+              variant="primary"
+              size="sm"
+            >
+              Fill 0.5 kg
+            </Button>
             <button onClick={onClose} className="text-tertiary hover:text-primary transition-colors" aria-label="Close modal">
               ✕
             </button>
@@ -213,7 +210,7 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
                   <tr className="bg-secondary">
                     <th className="border border-primary px-4 py-2 text-left text-sm font-medium">Sr No</th>
                     <th className="border border-primary px-4 py-2 text-left text-sm font-medium">KG</th>
-                    {mode === 'edit' && <th className="border border-primary px-4 py-2 text-left text-sm font-medium">Actions</th>}
+                    <th className="border border-primary px-4 py-2 text-left text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -234,36 +231,34 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
                           <span className="text-sm">{detail.kg.toFixed(2)}</span>
                         )}
                       </td>
-                      {mode === 'edit' && (
-                        <td className="border border-primary px-4 py-2">
-                          {editingRow === detail.sr_no ? (
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={handleSave}
-                                variant="primary"
-                                size="sm"
-                              >
-                                Save
-                              </Button>
-                              <Button
-                                onClick={handleCancel}
-                                variant="secondary"
-                                size="sm"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
+                      <td className="border border-primary px-4 py-2">
+                        {editingRow === detail.sr_no ? (
+                          <div className="flex gap-2">
                             <Button
-                              onClick={() => handleEdit(detail.sr_no, detail.kg)}
+                              onClick={handleSave}
+                              variant="primary"
+                              size="sm"
+                            >
+                              Save
+                            </Button>
+                            <Button
+                              onClick={handleCancel}
                               variant="secondary"
                               size="sm"
                             >
-                              Edit
+                              Cancel
                             </Button>
-                          )}
-                        </td>
-                      )}
+                          </div>
+                        ) : (
+                          <Button
+                            onClick={() => handleEdit(detail.sr_no, detail.kg)}
+                            variant="secondary"
+                            size="sm"
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -195,7 +195,7 @@ function AppContent() {
         {/* Page Content */}
         <div className="min-h-[calc(100vh-180px)]">
           {currentPage === 'dashboard' && <Dashboard expenses={expenses} mode={mode} onExpenseUpdate={refetch} />}
-          {currentPage === 'expenses' && <Expenses expenses={expenses} categories={getUniqueCategories()} mode={mode} onAddExpense={addExpense} onAddExpenses={addExpenses} onUpdateExpense={updateExpense} onDeleteExpense={deleteExpense} />}
+          {currentPage === 'expenses' && <Expenses expenses={expenses} categories={getUniqueCategories()} mode={mode} onAddExpense={addExpense} onAddExpenses={addExpenses} onUpdateExpense={updateExpense} onDeleteExpense={deleteExpense} onRequirePassword={() => setIsPasswordModalOpen(true)} />}
           {currentPage === 'analysis' && <Analysis mode={mode} />}
           {currentPage === 'salary' && mode === 'edit' && <Salary mode={mode} />}
         </div>
