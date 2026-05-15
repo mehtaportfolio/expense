@@ -165,14 +165,18 @@ export function Expenses({
           </p>
         </div>
         <div className="flex gap-2">
+          {mode === 'edit' && (
+            <>
+              <Button variant="secondary" onClick={() => setIsMilkModalOpen(true)}>
+                Milk
+              </Button>
+              <Button variant="primary" onClick={() => setIsAddModalOpen(true)}>
+                <PlusIcon className="w-5 h-5" />
+              </Button>
+            </>
+          )}
           <Button variant="secondary" onClick={toggleNotifications} className={`p-2 ${isEnabled ? 'text-primary border-primary' : 'text-secondary'}`} title={isEnabled ? 'Disable Daily Notifications' : 'Enable Daily Notifications'}>
             {isEnabled ? <BellOff className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
-          </Button>
-          <Button variant="secondary" onClick={() => setIsMilkModalOpen(true)}>
-            Milk
-          </Button>
-          <Button variant="primary" onClick={() => setIsAddModalOpen(true)}>
-            <PlusIcon className="w-5 h-5" />
           </Button>
         </div>
       </div>

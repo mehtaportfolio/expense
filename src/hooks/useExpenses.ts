@@ -41,6 +41,12 @@ export function useExpenses() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please switch to Edit Mode.');
+        }
+        if (response.status === 403) {
+          throw new Error('Invalid or expired session. Please re-authenticate.');
+        }
         throw new Error('Failed to add expense');
       }
 
@@ -67,6 +73,12 @@ export function useExpenses() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please switch to Edit Mode.');
+        }
+        if (response.status === 403) {
+          throw new Error('Invalid or expired session. Please re-authenticate.');
+        }
         throw new Error('Failed to add expenses');
       }
 
@@ -93,6 +105,12 @@ export function useExpenses() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please switch to Edit Mode.');
+        }
+        if (response.status === 403) {
+          throw new Error('Invalid or expired session. Please re-authenticate.');
+        }
         throw new Error('Failed to update expense');
       }
 
@@ -118,6 +136,12 @@ export function useExpenses() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please switch to Edit Mode.');
+        }
+        if (response.status === 403) {
+          throw new Error('Invalid or expired session. Please re-authenticate.');
+        }
         throw new Error('Failed to delete expense');
       }
 
