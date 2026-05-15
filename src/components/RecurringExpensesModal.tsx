@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ExpenseInsert } from '../types/database';
 import { Button } from './Button';
+import { getApiUrl } from '../lib/api';
 
 interface RecurringExpensesModalProps {
   isOpen: boolean;
@@ -58,7 +59,7 @@ export function RecurringExpensesModal({
       setLoading(true);
       // We can use the existing getAllExpenses and filter, or create a specific backend endpoint
       // Given the requirements, let's use the existing backend API
-      const response = await fetch('/api/expenses');
+      const response = await fetch(getApiUrl('/api/expenses'));
       if (!response.ok) throw new Error('Failed to fetch expenses');
       const allExpenses = await response.json();
 

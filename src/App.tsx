@@ -13,6 +13,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Expenses } from './pages/Expenses';
 import { Analysis } from './pages/Analysis';
 import { Salary } from './pages/Salary';
+import { getApiUrl } from './lib/api';
 
 type Page = 'dashboard' | 'expenses' | 'analysis' | 'salary';
 
@@ -53,7 +54,7 @@ function AppContent() {
 
     try {
       const password = sessionStorage.getItem('auth_password');
-      const response = await fetch('/api/restart', {
+      const response = await fetch(getApiUrl('/api/restart'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

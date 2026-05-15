@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Expense, SalaryDetail } from '../types/database';
+import { getApiUrl } from '../lib/api';
 
 // Helper to convert VAPID key
 function urlBase64ToUint8Array(base64String: string) {
@@ -18,7 +19,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
-const PUSH_SERVER_URL = '/api/subscribe'; 
+const PUSH_SERVER_URL = getApiUrl('/api/subscribe'); 
 
 export function useNotifications(expenses: Expense[], salaryDetails?: SalaryDetail[]) {
   const [isEnabled, setIsEnabled] = useState(() => {
@@ -103,7 +104,7 @@ export function useNotifications(expenses: Expense[], salaryDetails?: SalaryDeta
       if (subscription) {
         await subscription.unsubscribe();
         // Notify backend
-        await fetch('/api/unsubscribe', {
+        await fetch(getApiUrl('/api/unsubscribe'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ endpoint: subscription.endpoint })

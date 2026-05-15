@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MilkDetail } from '../types/database';
 import { Button } from './Button';
 import { Input } from './Input';
+import { getApiUrl } from '../lib/api';
 
 interface MilkTrackingModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
   const fetchMilkDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/milk');
+      const response = await fetch(getApiUrl('/api/milk'));
       if (!response.ok) {
         throw new Error('Failed to fetch milk details');
       }
@@ -71,7 +72,7 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
       const newKg = parseFloat(editValue);
       if (isNaN(newKg)) return;
 
-      const response = await fetch(`/api/milk/${editingRow}`, {
+      const response = await fetch(getApiUrl(`/api/milk/${editingRow}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ export function MilkTrackingModal({ isOpen, onClose, mode }: MilkTrackingModalPr
         return;
       }
 
-      const response = await fetch('/api/milk/fill-zero', {
+      const response = await fetch(getApiUrl('/api/milk/fill-zero'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

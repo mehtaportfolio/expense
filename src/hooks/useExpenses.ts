@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Expense, ExpenseInsert, ExpenseUpdate } from '../types/database';
+import { getApiUrl } from '../lib/api';
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -15,7 +16,7 @@ export function useExpenses() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/expenses');
+      const response = await fetch(getApiUrl('/api/expenses'));
       if (!response.ok) {
         throw new Error('Failed to fetch expenses');
       }
@@ -30,7 +31,7 @@ export function useExpenses() {
 
   const addExpense = async (expense: ExpenseInsert) => {
     try {
-      const response = await fetch('/api/expenses', {
+      const response = await fetch(getApiUrl('/api/expenses'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +57,7 @@ export function useExpenses() {
 
   const addExpenses = async (expensesToAdd: ExpenseInsert[]) => {
     try {
-      const response = await fetch('/api/expenses/bulk', {
+      const response = await fetch(getApiUrl('/api/expenses/bulk'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +83,7 @@ export function useExpenses() {
 
   const updateExpense = async (id: number, updates: ExpenseUpdate) => {
     try {
-      const response = await fetch(`/api/expenses/${id}`, {
+      const response = await fetch(getApiUrl(`/api/expenses/${id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ export function useExpenses() {
 
   const deleteExpense = async (id: number) => {
     try {
-      const response = await fetch(`/api/expenses/${id}`, {
+      const response = await fetch(getApiUrl(`/api/expenses/${id}`), {
         method: 'DELETE',
         headers: {
           ...getAuthHeaders()

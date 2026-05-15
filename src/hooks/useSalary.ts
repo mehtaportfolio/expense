@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { SalaryDetail, SalaryDetailInsert, SalaryDetailUpdate } from '../types/database';
+import { getApiUrl } from '../lib/api';
 
 export function useSalary() {
   const [salaryDetails, setSalaryDetails] = useState<SalaryDetail[]>([]);
@@ -15,7 +16,7 @@ export function useSalary() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/salary');
+      const response = await fetch(getApiUrl('/api/salary'));
       if (!response.ok) {
         throw new Error('Failed to fetch salary details');
       }
@@ -30,7 +31,7 @@ export function useSalary() {
 
   const addSalaryDetail = async (salaryDetail: SalaryDetailInsert) => {
     try {
-      const response = await fetch('/api/salary', {
+      const response = await fetch(getApiUrl('/api/salary'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ export function useSalary() {
 
   const updateSalaryDetail = async (id: number | string, salaryDetail: SalaryDetailUpdate) => {
     try {
-      const response = await fetch(`/api/salary/${id}`, {
+      const response = await fetch(getApiUrl(`/api/salary/${id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ export function useSalary() {
 
   const deleteSalaryDetail = async (id: number | string) => {
     try {
-      const response = await fetch(`/api/salary/${id}`, {
+      const response = await fetch(getApiUrl(`/api/salary/${id}`), {
         method: 'DELETE',
         headers: {
           ...getAuthHeaders()

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Master, MasterInsert } from '../types/database';
+import { getApiUrl } from '../lib/api';
 
 export function useMaster() {
   const [masterData, setMasterData] = useState<Master[]>([]);
@@ -10,7 +11,7 @@ export function useMaster() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/master');
+      const response = await fetch(getApiUrl('/api/master'));
       if (!response.ok) {
         throw new Error('Failed to fetch master data');
       }
@@ -20,7 +21,7 @@ export function useMaster() {
       if (!data || data.length === 0) {
         // We'll need to move initMasterTable logic to backend or handle it here via backend API
         // For now, let's assume the backend handles it or we call an init endpoint
-        const initResponse = await fetch('/api/master/initialize', {
+        const initResponse = await fetch(getApiUrl('/api/master/initialize'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify([
@@ -32,7 +33,7 @@ export function useMaster() {
         });
 
         if (initResponse.ok) {
-          const newDataResponse = await fetch('/api/master');
+          const newDataResponse = await fetch(getApiUrl('/api/master'));
           const newData = await newDataResponse.json();
           setMasterData(newData || []);
         } else {
@@ -59,7 +60,7 @@ export function useMaster() {
 
   const addMasterEntry = async (entry: MasterInsert) => {
     try {
-      const response = await fetch('/api/master', {
+      const response = await fetch(getApiUrl('/api/master'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

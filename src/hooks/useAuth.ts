@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import { getApiUrl } from '../lib/api';
 
 type Mode = 'view' | 'edit';
 
@@ -28,7 +29,7 @@ export function useAuthProvider() {
 
   const verifyPassword = async (password: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/verify', {
+      const response = await fetch(getApiUrl('/api/auth/verify'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ export function useAuthProvider() {
 
   const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/change-password', {
+      const response = await fetch(getApiUrl('/api/auth/change-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
