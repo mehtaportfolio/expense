@@ -17,6 +17,7 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
   const [loading, setLoading] = useState(false);
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [editValue, setEditValue] = useState<string>('');
+  const [fillValue, setFillValue] = useState<string>('0.5');
 
   const getAuthHeaders = () => {
     const password = sessionStorage.getItem('auth_password');
@@ -82,12 +83,14 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ kg: newKg }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update milk detail');
+        const errText = await response.text().catch(() => '');
+        throw new Error(`Failed to update milk detail: ${response.status} ${errText}`);
       }
 
       // Update local state
@@ -109,12 +112,11 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
     setEditValue('');
   };
 
-  const handleFillZeroValues = async () => {
+  const handleFillValues = async () => {
     try {
-      const rowsToUpdate = milkDetails.filter(item => item.kg === 0);
-      
-      if (rowsToUpdate.length === 0) {
-        alert('No rows with 0 kg to fill');
+      const valueToFill = parseFloat(fillValue);
+      if (isNaN(valueToFill)) {
+        alert('Please enter a valid number');
         return;
       }
 
@@ -123,20 +125,19 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ kg: 0.5 }),
+        body: JSON.stringify({ kg: valueToFill }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fill zero values');
+        throw new Error('Failed to fill values');
       }
 
+      // Update all rows locally as requested by user
       setMilkDetails(prev =>
-        prev.map(item =>
-          item.kg === 0 ? { ...item, kg: 0.5 } : item
-        )
+        prev.map(item => ({ ...item, kg: valueToFill }))
       );
     } catch (error) {
-      console.error('Error filling zero values:', error);
+      console.error('Error filling values:', error);
     }
   };
 
@@ -152,13 +153,23 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
         <div className="sticky top-0 bg-card border-b border-primary px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary">Milk Tracking</h2>
           <div className="flex items-center gap-3">
-            <Button
-              onClick={handleFillZeroValues}
-              variant="primary"
-              size="sm"
-            >
-              Fill 0.5 kg
-            </Button>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                step="0.01"
+                value={fillValue}
+                onChange={(e) => setFillValue(e.target.value)}
+                className="w-20 h-8 text-sm px-2 bg-secondary border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-primary"
+                placeholder="kg"
+              />
+              <Button
+                onClick={handleFillValues}
+                variant="primary"
+                size="sm"
+              >
+                Fill
+              </Button>
+            </div>
             <button onClick={onClose} className="text-tertiary hover:text-primary transition-colors" aria-label="Close modal">
               ✕
             </button>
@@ -170,8 +181,8 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
           <div className="bg-secondary/50 border border-primary rounded-lg p-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="md:w-1/3">
-                <label className="block text-sm font-medium text-secondary mb-2">Rate (per kg)</label>
                 <Input
+                  label="Rate (per kg)"
                   type="number"
                   step="0.01"
                   value={rate}
@@ -220,6 +231,7 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
                       <td className="border border-primary px-4 py-2">
                         {editingRow === detail.sr_no ? (
                           <Input
+                            label="KG"
                             type="number"
                             step="0.01"
                             value={editValue}

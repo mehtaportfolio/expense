@@ -19,8 +19,6 @@ export function useMaster() {
 
       // If no data, initialize the master table
       if (!data || data.length === 0) {
-        // We'll need to move initMasterTable logic to backend or handle it here via backend API
-        // For now, let's assume the backend handles it or we call an init endpoint
         const initResponse = await fetch(getApiUrl('/api/master/initialize'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -28,20 +26,21 @@ export function useMaster() {
             { category: 'Food', expense_type: 'expense' },
             { category: 'Transport', expense_type: 'expense' },
             { category: 'Salary', expense_type: 'income' },
-            // ... add more as needed from initMasterTable.ts
           ])
         });
 
-        if (initResponse.ok) {
-          const newDataResponse = await fetch(getApiUrl('/api/master'));
-          const newData = await newDataResponse.json();
-          setMasterData(newData || []);
-        } else {
+        if (!initResponse.ok) {
           throw new Error('Failed to initialize master table');
         }
-      } else {
-        setMasterData(data);
       }
+
+      // Always refetch after possible initialization so masterData reflects DB state
+      const newDataResponse = await fetch(getApiUrl('/api/master'));
+      if (!newDataResponse.ok) {
+        throw new Error('Failed to fetch master data');
+      }
+      const newData = await newDataResponse.json();
+      setMasterData(newData || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch master data');
     } finally {
@@ -51,7 +50,12 @@ export function useMaster() {
 
   const getExpenseTypeByCategory = (category: string): 'income' | 'expense' | null => {
     const masterEntry = masterData.find(entry => entry.category.toLowerCase() === category.toLowerCase());
-    return masterEntry ? (masterEntry.expense_type as 'income' | 'expense') : null;
+    if (!masterEntry?.expense_type) return null;
+
+    const normalized = String(masterEntry.expense_type).trim().toLowerCase();
+    return (normalized === 'income' || normalized === 'expense')
+      ? (normalized as 'income' | 'expense')
+      : null;
   };
 
   const isCategoryInMaster = (category: string): boolean => {
@@ -59,13 +63,18 @@ export function useMaster() {
   };
 
   const addMasterEntry = async (entry: MasterInsert) => {
+    // Keep expense_type casing exactly as provided by the user (existing values may be mixed)
+    const normalizedEntry = {
+      ...entry,
+      expense_type: typeof entry.expense_type === 'string' ? entry.expense_type.trim() : entry.expense_type
+    };
     try {
       const response = await fetch(getApiUrl('/api/master'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(entry),
+        body: JSON.stringify(normalizedEntry),
       });
 
       if (!response.ok) {

@@ -54,6 +54,7 @@ export function Dashboard({
 
     currentMonthData.expenses.forEach(exp => {
       const normalizedType = exp.expense_type.toLowerCase();
+      if (normalizedType === 'income') return;
       typeTotals[normalizedType] = (typeTotals[normalizedType] || 0) + exp.amount;
     });
 
@@ -67,6 +68,32 @@ export function Dashboard({
       .sort((a, b) => b.value - a.value); // Sort by amount descending
   }, [currentMonthData.expenses]);
 
+  const dailyChartData = useMemo(() => {
+    const dailyTotals: Record<number, number> = {};
+    const now = new Date();
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      dailyTotals[i] = 0;
+    }
+
+    currentMonthData.expenses.forEach(exp => {
+      if (exp.expense_type.toLowerCase() === 'income') return;
+      const dateStr = exp.date.split('T')[0];
+      const day = parseInt(dateStr.split('-')[2]);
+      if (dailyTotals[day] !== undefined) {
+        dailyTotals[day] += exp.amount;
+      }
+    });
+
+    return Object.entries(dailyTotals).map(([day, amount]) => ({
+      label: day,
+      value: amount
+    }))
+    .filter(item => item.value > 0)
+    .sort((a, b) => parseInt(a.label) - parseInt(b.label));
+  }, [currentMonthData.expenses]);
+
   const handleBarClick = (expenseTypeLabel: string) => {
     // Convert display label back to database format (lowercase)
     const expenseType = expenseTypeLabel.toLowerCase();
@@ -78,6 +105,22 @@ export function Dashboard({
     setModalState({
       isOpen: true,
       expenseType: expenseTypeLabel,
+      transactions
+    });
+  };
+
+  const handleDailyBarClick = (dayLabel: string) => {
+    const day = parseInt(dayLabel);
+    const transactions = currentMonthData.expenses.filter(exp => {
+      if (exp.expense_type.toLowerCase() === 'income') return false;
+      const dateStr = exp.date.split('T')[0];
+      const expDay = parseInt(dateStr.split('-')[2]);
+      return expDay === day;
+    });
+
+    setModalState({
+      isOpen: true,
+      expenseType: `Day ${day}`,
       transactions
     });
   };
@@ -117,6 +160,18 @@ export function Dashboard({
             height={180}
             showValues={true}
             onBarClick={handleBarClick}
+          />
+        </div>
+      )}
+
+      {dailyChartData.length > 0 && (
+        <div className="mt-8">
+          <BarChart
+            data={dailyChartData}
+            title="Daily Total Expenses"
+            height={180}
+            showValues={true}
+            onBarClick={handleDailyBarClick}
           />
         </div>
       )}
