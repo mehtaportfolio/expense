@@ -93,13 +93,6 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
         throw new Error(`Failed to update milk detail: ${response.status} ${errText}`);
       }
 
-      // Update local state
-      setMilkDetails(prev =>
-        prev.map(item =>
-          item.sr_no === editingRow ? { ...item, kg: newKg } : item
-        )
-      );
-
       setEditingRow(null);
       setEditValue('');
     } catch (error) {
@@ -112,36 +105,38 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
     setEditValue('');
   };
 
-  const handleFillValues = async () => {
-    try {
-      const valueToFill = parseFloat(fillValue);
-      if (isNaN(valueToFill)) {
-        alert('Please enter a valid number');
-        return;
-      }
+const handleFillValues = async () => {
+  try {
+    const valueToFill = parseFloat(fillValue);
 
-      const response = await fetch(getApiUrl('/api/milk/fill-zero'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders(),
-        },
-        body: JSON.stringify({ kg: valueToFill }),
-      });
-
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        throw new Error(`Failed to fill values: ${response.status} ${errText}`);
-      }
-
-      // Update all rows locally as requested by user
-      setMilkDetails(prev =>
-        prev.map(item => ({ ...item, kg: valueToFill }))
-      );
-    } catch (error) {
-      console.error('Error filling values:', error);
+    if (isNaN(valueToFill)) {
+      alert('Please enter a valid number');
+      return;
     }
-  };
+
+    const response = await fetch(getApiUrl('/api/milk/fill-zero'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify({ kg: valueToFill }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      throw new Error(`Failed to fill values: ${response.status} ${errText}`);
+    }
+
+    // 🔥 IMPORTANT: re-fetch from DB
+    setLoading(true);
+await fetchMilkDetails();
+setLoading(false);
+
+  } catch (error) {
+    console.error('Error filling values:', error);
+  }
+};
 
   const totalKg = milkDetails.reduce((sum, item) => sum + item.kg, 0);
   const totalAmount = totalKg * rate;
