@@ -124,12 +124,14 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ kg: valueToFill }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fill values');
+        const errText = await response.text().catch(() => '');
+        throw new Error(`Failed to fill values: ${response.status} ${errText}`);
       }
 
       // Update all rows locally as requested by user
