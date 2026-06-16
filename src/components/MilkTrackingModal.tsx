@@ -73,32 +73,40 @@ export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: 
   };
 
   const handleSave = async () => {
-    if (editingRow === null) return;
+  if (editingRow === null) return;
 
-    try {
-      const newKg = parseFloat(editValue);
-      if (isNaN(newKg)) return;
+  try {
+    const newKg = parseFloat(editValue);
+    if (isNaN(newKg)) return;
 
-      const response = await fetch(getApiUrl(`/api/milk/${editingRow}`), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders(),
-        },
-        body: JSON.stringify({ kg: newKg }),
-      });
+    const response = await fetch(getApiUrl(`/api/milk/${editingRow}`), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify({ kg: newKg }),
+    });
 
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        throw new Error(`Failed to update milk detail: ${response.status} ${errText}`);
-      }
-
-      setEditingRow(null);
-      setEditValue('');
-    } catch (error) {
-      console.error('Error updating milk detail:', error);
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      throw new Error(`Failed to update milk detail: ${response.status} ${errText}`);
     }
-  };
+
+setMilkDetails(prev =>
+  prev.map(row =>
+    row.sr_no === editingRow
+      ? { ...row, kg: newKg }
+      : row
+  )
+);
+
+    setEditingRow(null);
+    setEditValue('');
+  } catch (error) {
+    console.error('Error updating milk detail:', error);
+  }
+};
 
   const handleCancel = () => {
     setEditingRow(null);
