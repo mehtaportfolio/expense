@@ -13,11 +13,11 @@ interface MilkTrackingModalProps {
 
 export function MilkTrackingModal({ isOpen, onClose, mode, onRequirePassword }: MilkTrackingModalProps) {
   const [milkDetails, setMilkDetails] = useState<MilkDetail[]>([]);
-  const [rate, setRate] = useState<number>(45);
+  const [rate, setRate] = useState<number>(60);
   const [loading, setLoading] = useState(false);
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [editValue, setEditValue] = useState<string>('');
-  const [fillValue, setFillValue] = useState<string>('0.5');
+  const [fillValue, setFillValue] = useState<string>('');
 
   const getAuthHeaders = () => {
     const password = sessionStorage.getItem('auth_password');
@@ -192,9 +192,8 @@ setLoading(false);
                   step="0.01"
                   value={rate}
                   onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
-                  placeholder="0.00"
+                  placeholder="60.00"
                   className="w-full"
-                  disabled={mode === 'view'}
                 />
               </div>
               <div className="flex gap-6 md:justify-end">
